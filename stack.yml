@@ -6,7 +6,7 @@ Parameters:
       Coin list with optional drop percentage, fx "DOT,KSM:-20%,MOVR:-20%"
     Type: CommaDelimitedList
 
-  RecipientEmailAddresses:
+  Recipients:
     Description: Notification recipient email addresses, max count is 2
     Type: CommaDelimitedList
 
@@ -135,8 +135,8 @@ Resources:
       FifoTopic: false
       KmsMasterKeyId: !Ref AWS::NoValue
       Subscription: 
-        - Endpoint: !Select [ "0", !Ref RecipientEmailAdresses ]
+        - Endpoint: !Select [ "0", !Ref Recipients ]
           Protocol: email
-        - Endpoint: !Select [ "1", !Ref RecipientEmailAdresses ]
+        - Endpoint: !Select [ "1", !Ref Recipients ]
           Protocol: email
       TopicName: !Sub ${AWS::StackName}-topic

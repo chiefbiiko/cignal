@@ -16,7 +16,7 @@ env:
   LAMBDA_LOG_RETENTION_DAYS: 7
   DROPS: "DOT:-25%,KSM:-20%,MOVR:-20%"
 
-  # the pipeline further needs the following secrets: AWS_ACCESS_KEY_ID, 
+  # pipeline needs further secrets: AWS_ACCESS_KEY_ID, 
   # AWS_SECRET_ACCESS_KEY, RECIPIENT_EMAIL_ADDRESSES
 
 jobs:
@@ -45,7 +45,7 @@ jobs:
             --template-file=./stack.yml \
             --parameter-overrides \
               Drops=${{ env.DROPS }} \
-              RecipientEmailAddresses=${{ secrets.RECIPIENT_EMAIL_ADDRESSES }} \
+              Recipients=${{ secrets.RECIPIENTS }} \
               LambdaBundleBucketName=${{ env.LAMBDA_BUNDLE_BUCKET_NAME }} \
               LambdaBundleFilename=${{ env.LAMBDA_BUNDLE_FILE_NAME }} \
               LambdaMemorySize=${{ env.LAMBDA_MEMORY_SIZE }} \

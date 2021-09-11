@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  User:
+    Type: AWS::IAM::User
+    Properties:
+      Policies:
+        - PolicyName: DeploymentPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: AllowStackDeployments
+                Effect: Allow
+                Action:
+                  - cloudformation:*
+                  - lambda:*
+                  - iam:*
+                  - s3:*
+                  - logs:*
+                  - sns:*
+                Resource: "*"
+
+  AccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      Status: Active
+      UserName: !Ref User
+
+Outputs:
+  UserArn:
+    Value: !GetAtt User.Arn
+
+  UserAccessKeyId:
+    Value: !Ref AccessKey
+
+  UserSecretAccessKey:
+    Value: !GetAtt AccessKey.SecretAccessKey
