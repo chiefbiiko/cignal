@@ -1,0 +1,50 @@
+name: cd
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-1
+  STACK_NAME: cignal
+  LAMBDA_BUNDLE_BUCKET_NAME: cignal-lambda-bundle
+  LAMBDA_BUNDLDE_FILE_NAME: lambda.zip
+  LAMBDA_MEMORY_SIZE: 128
+  LAMBDA_TIMEOUT: 3
+  LAMBDA_SCHEDULE: "rate(2 minutes)"
+  LAMBDA_LOG_RETENTION_DAYS: 7
+
+  # the pipeline further needs the following secrets: AWS_ACCESS_KEY_ID, 
+  # AWS_SECRET_ACCESS_KEY, RECIPIENT_EMAIL_ADDRESSES, TACTICS
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2.3.4
+
+      - uses: aws-actions/configure-aws-credentials@v1.5.9
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - run: aws s3 mb s3://${{ env.LAMBDA_BUNDLE_BUCKET_NAME }}
+
+      - name: deploy the core stack
+        run: |
+          aws cloudformation deploy \
+            --stack-name=${{ env.STACK_NAME }} \
+            --template-file=./stack.yml \
+            --parameter-overrides \
+              Tactics=${{ secrets.TACTICS }} \
+              RecipientEmailAddresses=${{ secrets.RECIPIENT_EMAIL_ADDRESSES }} \
+              LambdaBundleBucketName=${{ env.LAMBDA_BUNDLE_BUCKET_NAME }} \
+              LambdaBundleFilename=${{ env.LAMBDA_BUNDLE_FILE_NAME }} \
+              LambdaMemorySize=${{ env.LAMBDA_MEMORY_SIZE }} \
+              LambdaTimeout=${{ env.LAMBDA_TIMEOUT }} \
+              LambdaSchedule=${{ env.LAMBDA_SCHEDULE }} \
+              LambdaLogRetentionDays=${{ env.LAMBDA_LOG_RETENTION_DAYS }} \
+            --capabilities=CAPABILITY_IAM \
+            --no-fail-on-empty-changeset
