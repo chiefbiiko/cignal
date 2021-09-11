@@ -10,7 +10,7 @@ deploy the stack parameterized to your needs
 
 ## params
 
-specifyin' price drops 2 look out 4 works like this:
+specifyin' price drops 2 look out 4 looks like this:
 
 ```
 DOT:-25%,KSM:-20%,MOVR:-20%
@@ -18,11 +18,11 @@ DOT:-25%,KSM:-20%,MOVR:-20%
 
 when no drop percentage is specified, it defaults to -15%
 
-such a string must be set as param `Drops` as shown in below command
+such a string must be set as cfn param `Drops` as shown in below command
 
 ```bash
 aws cloudformation deploy \
-  --stack-name=${{ env.STACK_NAME }} \
+  --stack-name=cignal \
   --template-file=./stack.yml \
   --parameter-overrides \
     Drops="DOT:-25%,KSM:-20%,MOVR:-20%" \
@@ -31,10 +31,10 @@ aws cloudformation deploy \
     LambdaBundleFilename=lambda.zip \
     LambdaMemorySize=128 \
     LambdaTimeout=3 \
-    LambdaSchedule="rate(7 minutes)" \
-    LambdaLogRetentionDays=${{ env.LAMBDA_LOG_RETENTION_DAYS }} \
+    LambdaSchedule="0/5 * * * *" \
+    LambdaLogRetentionDays=7 \
   --capabilities=CAPABILITY_IAM \
   --no-fail-on-empty-changeset
 ```
 
-tbc
+happy shoppin' 🛒💱💰

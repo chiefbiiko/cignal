@@ -32,7 +32,7 @@ Parameters:
   LambdaSchedule:
     Description: Lambda execution schedule
     Type: String
-    Default: rate(7 minutes)
+    Default: "0/5 * * * *"
 
   LambdaLogRetentionDays:
     Description: Lambda log retention period in days
