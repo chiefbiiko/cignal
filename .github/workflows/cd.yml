@@ -14,7 +14,7 @@ env:
   LAMBDA_TIMEOUT: 3
   LAMBDA_SCHEDULE: "0/5 * * * *"
   LAMBDA_LOG_RETENTION_DAYS: 7
-  DROPS: "DOT:-25%,KSM:-20%,MOVR:-20%"
+  DROPS: DOT:-25%,KSM:-20%,MOVR:-20%
 
   # pipeline needs further secrets: AWS_ACCESS_KEY_ID, 
   # AWS_SECRET_ACCESS_KEY, RECIPIENT_EMAIL_ADDRESSES
@@ -44,7 +44,7 @@ jobs:
             --stack-name=${{ env.STACK_NAME }} \
             --template-file=./stack.yml \
             --parameter-overrides \
-              Drops=${{ env.DROPS }} \
+              Drops='${{ env.DROPS }}' \
               Recipients=${{ secrets.RECIPIENTS }} \
               LambdaBundleBucketName=${{ env.LAMBDA_BUNDLE_BUCKET_NAME }} \
               LambdaBundleFilename=${{ env.LAMBDA_BUNDLE_FILE_NAME }} \
