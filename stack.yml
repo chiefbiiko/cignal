@@ -86,7 +86,7 @@ Resources:
       Environment:
         Variables:
           TACTICS: !Ref Tactics
-          TOPIC_ARN: TODO
+          TOPIC_ARN: !Ref Topic
       FunctionName: !Sub ${AWS::StackName}-lambda
       Handler: index.handler
       Role: !GetAtt LambdaExecutionRole.Arn
