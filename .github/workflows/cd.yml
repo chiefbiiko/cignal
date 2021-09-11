@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: us-east-1
   STACK_NAME: cignal
-  LAMBDA_BUNDLE_BUCKET_NAME: cignal-lambda-bundle
+  LAMBDA_BUNDLE_BUCKET_NAME: cignal-lambda-bundle-bucket
   LAMBDA_BUNDLDE_FILE_NAME: lambda.zip
   LAMBDA_MEMORY_SIZE: 128
   LAMBDA_TIMEOUT: 3
@@ -37,7 +37,7 @@ jobs:
           tmp_dir=$(mktemp -d)
           npx @vercel/ncc@0.31.0 build --out=$tmp_dir ./index.js
           zip -j $tmp_dir/bundle.zip $tmp_dir/index.js
-          aws s3 cp $tmp_dir/bundle.zip s3://${{ env.LAMBDA_CODE_BUCKET_NAME }}/${{ env.LAMBDA_BUNDLE_FILE_NAME }}
+          aws s3 cp $tmp_dir/bundle.zip s3://${{ env.LAMBDA_BUNDLE_BUCKET_NAME }}/${{ env.LAMBDA_BUNDLE_FILE_NAME }}
 
       - run: |
           aws cloudformation deploy \
