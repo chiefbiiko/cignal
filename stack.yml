@@ -1,9 +1,10 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
-  Tactics:
-    Description: Notification tactics the lambda executes
-    Type: String
+  Drops:
+    Description: |
+      Coin list with optional drop percentage, fx "DOT,KSM:-20%,MOVR:-20%"
+    Type: CommaDelimitedList
 
   RecipientEmailAddresses:
     Description: Notification recipient email addresses, max count is 2
@@ -31,7 +32,7 @@ Parameters:
   LambdaSchedule:
     Description: Lambda execution schedule
     Type: String
-    Default: rate(2 minutes)
+    Default: rate(7 minutes)
 
   LambdaLogRetentionDays:
     Description: Lambda log retention period in days
@@ -39,6 +40,36 @@ Parameters:
     Default: 7
 
 Resources:
+  MemBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 2
+
+ MemBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MemBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AllowLambdaGetPutObject
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt LambdaExecutionRole.Arn
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+            Resource: !Sub arn:aws:s3:::${MemBucket}/*
+
+          - Sid: AllowLambdaListBucket
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt LambdaExecutionRole.Arn
+            Action: s3:ListBucket
+            Resource: !GetAtt MemBucket.Arn
+
   LambdaExecutionRole:
       Type: AWS::IAM::Role
       Properties:
@@ -63,20 +94,6 @@ Resources:
                     - logs:PutLogEvents
                   Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}-lambda
 
-  Topic:
-    Type: AWS::SNS::Topic
-    Properties: 
-      ContentBasedDeduplication: false
-      DisplayName: !Ref AWS::StackName
-      FifoTopic: false
-      KmsMasterKeyId: !Ref AWS::NoValue
-      Subscription: 
-        - Endpoint: !Select [ "0", !Ref RecipientEmailAdresses ]
-          Protocol: email
-        - Endpoint: !Select [ "1", !Ref RecipientEmailAdresses ]
-          Protocol: email
-      TopicName: !Sub ${AWS::StackName}-topic
-
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -85,8 +102,9 @@ Resources:
         S3Key: !Ref LambdaBundleFilename
       Environment:
         Variables:
-          TACTICS: !Ref Tactics
+          DROPS: !Ref Drops
           TOPIC_ARN: !Ref Topic
+          MEM_BUCKET_NAME: !Ref MemBucket
       FunctionName: !Sub ${AWS::StackName}-lambda
       Handler: index.handler
       Role: !GetAtt LambdaExecutionRole.Arn
@@ -108,3 +126,17 @@ Resources:
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: LambdaSchedule
+
+  Topic:
+    Type: AWS::SNS::Topic
+    Properties: 
+      ContentBasedDeduplication: false
+      DisplayName: !Ref AWS::StackName
+      FifoTopic: false
+      KmsMasterKeyId: !Ref AWS::NoValue
+      Subscription: 
+        - Endpoint: !Select [ "0", !Ref RecipientEmailAdresses ]
+          Protocol: email
+        - Endpoint: !Select [ "1", !Ref RecipientEmailAdresses ]
+          Protocol: email
+      TopicName: !Sub ${AWS::StackName}-topic

@@ -1,51 +1,40 @@
 # cignal
 
-custom *24/7* **_crypto_** alerts
-
-*pullin' all data from the [`coingecko`](https://www.coingecko.com/api/documentations/v3) api*
+get 📧 4 when it's ⌚ 2 🛒 ur fav crypto <sub>unofficially powered by [`coingecko`](https://www.coingecko.com/api/documentations/v3)</sub>
 
 ## usage
 
 deploy the stack parameterized to your needs
 
-> at a minimum you would want to set your notification tactics and receipient email address
+> at a minimum you would want to set your drop list and receipient email address(es)
 
-## events & tactics
+## params
 
-events are just market events
-
-in `cignal` a tactic determines whether, when, and on what coins to notify
-
-tactics are defined in a simple case&space-insensitive string format
-
-with multiple tactics delimited by a semicolon
-
-### `DROP` event
-
-a statistically significant price drop **?min-10%?**
-
-defining a `DROP` event tactic, fx:
+specifyin' price drops 2 look out 4 works like this:
 
 ```
-DROP: DOT,ETH,ENJ,MOVR,KSM
+DOT:-25%,KSM:-20%,MOVR:-20%
 ```
 
-would notify on significant price drops in any of the listed currencies
+when no drop percentage is specified, it defaults to -15%
 
-### `LIMIT` event
+such a string must be set as param `Drops` as shown in below command
 
-reached a particular price, fx:
-
-```
-LIMIT: DOT:150USD, ETH:15000USD
-```
-
-would notify on `DOT` reachin' `150USD` and `ETH` `15000USD`
-
-### multi tactics example
-
-```
-DROP: DOT,ETH; LIMIT: DOT:150USD,ETH:15000USD
+```bash
+aws cloudformation deploy \
+  --stack-name=${{ env.STACK_NAME }} \
+  --template-file=./stack.yml \
+  --parameter-overrides \
+    Drops="DOT:-25%,KSM:-20%,MOVR:-20%" \
+    RecipientEmailAddresses="x@y.z,a@b.c" \
+    LambdaBundleBucketName=my-lambda-bundle-bucket \
+    LambdaBundleFilename=lambda.zip \
+    LambdaMemorySize=128 \
+    LambdaTimeout=3 \
+    LambdaSchedule="rate(7 minutes)" \
+    LambdaLogRetentionDays=${{ env.LAMBDA_LOG_RETENTION_DAYS }} \
+  --capabilities=CAPABILITY_IAM \
+  --no-fail-on-empty-changeset
 ```
 
 tbc

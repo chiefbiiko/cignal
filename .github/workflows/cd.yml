@@ -14,9 +14,10 @@ env:
   LAMBDA_TIMEOUT: 3
   LAMBDA_SCHEDULE: "rate(2 minutes)"
   LAMBDA_LOG_RETENTION_DAYS: 7
+  DROPS: "DOT:-25%,KSM:-20%,MOVR:-20%"
 
   # the pipeline further needs the following secrets: AWS_ACCESS_KEY_ID, 
-  # AWS_SECRET_ACCESS_KEY, RECIPIENT_EMAIL_ADDRESSES, TACTICS
+  # AWS_SECRET_ACCESS_KEY, RECIPIENT_EMAIL_ADDRESSES
 
 jobs:
   deploy:
@@ -30,15 +31,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - run: aws s3 mb s3://${{ env.LAMBDA_BUNDLE_BUCKET_NAME }}
+      - run: |
+          aws s3 mb s3://${{ env.LAMBDA_BUNDLE_BUCKET_NAME }}
+          npm ci --only=prod
+          tmp_dir=$(mktemp -d)
+          npx @vercel/ncc@0.31.0 build --out=$tmp_dir ./index.js
+          zip -j $tmp_dir/bundle.zip $tmp_dir/index.js
+          aws s3 cp $tmp_dir/bundle.zip s3://${{ env.LAMBDA_CODE_BUCKET_NAME }}/${{ env.LAMBDA_BUNDLE_FILE_NAME }}
 
-      - name: deploy the core stack
-        run: |
+      - run: |
           aws cloudformation deploy \
             --stack-name=${{ env.STACK_NAME }} \
             --template-file=./stack.yml \
             --parameter-overrides \
-              Tactics=${{ secrets.TACTICS }} \
+              Drops=${{ env.DROPS }} \
               RecipientEmailAddresses=${{ secrets.RECIPIENT_EMAIL_ADDRESSES }} \
               LambdaBundleBucketName=${{ env.LAMBDA_BUNDLE_BUCKET_NAME }} \
               LambdaBundleFilename=${{ env.LAMBDA_BUNDLE_FILE_NAME }} \
