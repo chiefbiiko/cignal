@@ -39,12 +39,12 @@ jobs:
           zip -j $tmp_dir/bundle.zip $tmp_dir/index.js
           aws s3 cp $tmp_dir/bundle.zip s3://${{ env.LAMBDA_BUNDLE_BUCKET_NAME }}/${{ env.LAMBDA_BUNDLE_FILE_NAME }}
 
+        # Drops=${{ env.DROPS }} \
       - run: |
           aws cloudformation deploy \
             --stack-name=${{ env.STACK_NAME }} \
             --template-file=./stack.yml \
             --parameter-overrides \
-              Drops='${{ env.DROPS }}' \
               Recipients=${{ secrets.RECIPIENTS }} \
               LambdaBundleBucketName=${{ env.LAMBDA_BUNDLE_BUCKET_NAME }} \
               LambdaBundleFilename=${{ env.LAMBDA_BUNDLE_FILE_NAME }} \

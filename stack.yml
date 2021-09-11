@@ -1,11 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
-  Drops:
-    Description: |
-      Coin list with optional drop percentage, fx "DOT,KSM:-20%,MOVR:-20%"
-    Type: CommaDelimitedList
-
   Recipients:
     Description: Notification recipient email addresses, max count is 2
     Type: CommaDelimitedList
@@ -13,6 +8,12 @@ Parameters:
   LambdaBundleBucketName:
     Description: Lambda bundle bucket name
     Type: String
+
+  Drops:
+    Description: |
+      Coin list with optional drop percentage, fx "DOT,KSM:-20%,MOVR:-20%"
+    Type: CommaDelimitedList
+    Default: DOT,KSM,MOVR
 
   LambdaBundleFilename:
     Description: Lambda bundle file name
@@ -93,6 +94,18 @@ Resources:
                     - logs:CreateLogStream
                     - logs:PutLogEvents
                   Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}-lambda
+
+                - Sid: AllowS3GetPutObject
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:PutObject
+                  Resource: !Sub arn:aws:s3:::${MemBucket}/*
+
+                - Sid: AllowS3ListBucket
+                  Effect: Allow
+                  Action: s3:ListBucket
+                  Resource: !GetAtt MemBucket.Arn
 
   Lambda:
     Type: AWS::Lambda::Function
