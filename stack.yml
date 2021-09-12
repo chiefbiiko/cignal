@@ -47,7 +47,7 @@ Resources:
         Rules:
           - ExpirationInDays: 2
 
- MemBucketPolicy:
+  MemBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: !Ref MemBucket

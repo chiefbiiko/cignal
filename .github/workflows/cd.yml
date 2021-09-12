@@ -9,7 +9,7 @@ env:
   AWS_REGION: us-east-1
   STACK_NAME: cignal
   LAMBDA_BUNDLE_BUCKET_NAME: cignal-lambda-bundle-bucket
-  LAMBDA_BUNDLDE_FILE_NAME: lambda.zip
+  LAMBDA_BUNDLE_FILE_NAME: lambda.zip
   LAMBDA_MEMORY_SIZE: 128
   LAMBDA_TIMEOUT: 3
   LAMBDA_SCHEDULE: "0/5 * * * *"
@@ -45,12 +45,12 @@ jobs:
             --template-file=./stack.yml \
             --parameter-overrides \
               Drops=${{ env.DROPS }} \
-              Recipients=${{ secrets.RECIPIENTS }} \
+              Recipients='${{ secrets.RECIPIENTS }}' \
               LambdaBundleBucketName=${{ env.LAMBDA_BUNDLE_BUCKET_NAME }} \
               LambdaBundleFilename=${{ env.LAMBDA_BUNDLE_FILE_NAME }} \
               LambdaMemorySize=${{ env.LAMBDA_MEMORY_SIZE }} \
               LambdaTimeout=${{ env.LAMBDA_TIMEOUT }} \
-              LambdaSchedule=${{ env.LAMBDA_SCHEDULE }} \
+              LambdaSchedule='${{ env.LAMBDA_SCHEDULE }}' \
               LambdaLogRetentionDays=${{ env.LAMBDA_LOG_RETENTION_DAYS }} \
             --capabilities=CAPABILITY_IAM \
             --no-fail-on-empty-changeset
