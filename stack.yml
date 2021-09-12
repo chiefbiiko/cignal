@@ -109,7 +109,9 @@ Resources:
         S3Key: !Ref LambdaBundleFilename
       Environment:
         Variables:
-          DROPS: !Ref Drops
+          DROPS: !Join
+            - ""
+            - !Ref Drops
           TOPIC_ARN: !Ref Topic
           MEM_BUCKET_NAME: !Ref MemBucket
       FunctionName: !Sub ${AWS::StackName}-lambda
@@ -140,7 +142,11 @@ Resources:
       TopicName: !Sub ${AWS::StackName}-topic
       DisplayName: !Ref AWS::StackName
       Subscription: 
-        - Endpoint: !Select [ "0", !Ref Recipients ]
+        - Endpoint: !Select
+            - "0"
+            - !Ref Recipients
           Protocol: email
-        - Endpoint: !Select [ "1", !Ref Recipients ]
+        - Endpoint: !Select
+            - "1"
+            - !Ref Recipients
           Protocol: email

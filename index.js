@@ -6,16 +6,14 @@ const {
 if (!process.env.MEM_BUCKET_NAME) throw Error("env var MEM_BUCKET_NAME unset")
 if (!process.env.TOPIC_ARN) throw Error("env var TOPIC_ARN unset")
 
-const drops = process.env.DROPS.split(",")
-  .filter(Boolean)
-  .map(drop => {
-    const [symbol, perc = "-20%"] = drop.split(/\b(?=-)/)
-    if (!perc.startsWith("-")) throw Error("non-negative price change defined")
-    return {
-      symbol: symbol.toLowerCase(),
-      minDropPerc: Number(perc.replace("%", ""))
-    }
-  })
+const drops = JSON.parse(process.env.DROPS).map(drop => {
+  const [symbol, perc = "-20%"] = drop.split(/\b(?=-)/)
+  if (!perc.startsWith("-")) throw Error("non-negative price change defined")
+  return {
+    symbol: symbol.toLowerCase(),
+    minDropPerc: Number(perc.replace("%", ""))
+  }
+})
 
 const symbolToCoinGeckoId = Object.freeze({
   eth: "ethereum",
