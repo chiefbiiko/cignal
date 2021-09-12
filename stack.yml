@@ -136,14 +136,11 @@ Resources:
 
   Topic:
     Type: AWS::SNS::Topic
-    Properties: 
-      ContentBasedDeduplication: false
+    Properties:
+      TopicName: !Sub ${AWS::StackName}-topic
       DisplayName: !Ref AWS::StackName
-      FifoTopic: false
-      KmsMasterKeyId: !Ref AWS::NoValue
       Subscription: 
         - Endpoint: !Select [ "0", !Ref Recipients ]
           Protocol: email
         - Endpoint: !Select [ "1", !Ref Recipients ]
           Protocol: email
-      TopicName: !Sub ${AWS::StackName}-topic
