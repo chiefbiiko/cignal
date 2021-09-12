@@ -18,6 +18,7 @@ Resources:
                   - s3:*
                   - logs:*
                   - sns:*
+                  - events:*
                 Resource: "*"
 
   AccessKey:
