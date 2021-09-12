@@ -6,19 +6,17 @@ get 📧 4 when it's ⌚ 2 🛒 ur fav crypto <sub>unofficially powered by [`coi
 
 deploy the stack parameterized to your needs
 
-> at a minimum you would want to set your drop list and receipient email address(es)
+## drops
 
-## params
-
-specifyin' price drops 2 look out 4 looks like this:
+specifyin' price drops, cfn param `Drops`, looks like this:
 
 ```
-DOT-25%,KSM,MOVR
+KSM-30%,MOVR
 ```
 
 when no drop percentage is specified, it defaults to -20%
 
-such a string must be set as cfn param `Drops` as shown in below command
+## all deployment params
 
 ```bash
 aws cloudformation deploy \
@@ -26,7 +24,7 @@ aws cloudformation deploy \
   --template-file=./stack.yml \
   --parameter-overrides \
     Drops="DOT-25%,KSM-20%,MOVR-20%" \
-    RecipientEmailAddresses="x@y.z,a@b.c" \
+    Recipients="x@y.z,a@b.c" \
     LambdaBundleBucketName=my-lambda-bundle-bucket \
     LambdaBundleFilename=lambda.zip \
     LambdaMemorySize=128 \
@@ -37,4 +35,4 @@ aws cloudformation deploy \
   --no-fail-on-empty-changeset
 ```
 
-happy shoppin' 🛒📦💰
+happy shoppin' 🛒📦📦

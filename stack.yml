@@ -12,32 +12,26 @@ Parameters:
   Drops:
     Description: Coin list with optional drop percentage, fx "DOT,KSM-20%,MOVR-20%"
     Type: CommaDelimitedList
-    Default: DOT,KSM,MOVR,STAKE
 
   LambdaBundleFilename:
     Description: Lambda bundle file name
     Type: String
-    Default: lambda.zip
 
   LambdaMemorySize:
     Description: Lambda memory size in MB
     Type: Number
-    Default: 128
 
   LambdaTimeout:
     Description: Lambdatimeout in seconds
     Type: Number
-    Default: 3
 
-  LambdaSchedule:
+  LambdaScheduleExpression:
     Description: Lambda execution schedule
     Type: String
-    Default: "0/2 * * * *"
 
   LambdaLogRetentionDays:
     Description: Lambda log retention period in days
     Type: Number
-    Default: 7
 
 Resources:
   MemBucket:
@@ -133,7 +127,7 @@ Resources:
   LambdaSchedule:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: !Ref LambdaSchedule
+      ScheduleExpression: !Ref LambdaScheduleExpression
       State: ENABLED
       Targets:
         - Arn: !GetAtt Lambda.Arn
