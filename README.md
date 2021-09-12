@@ -13,10 +13,10 @@ deploy the stack parameterized to your needs
 specifyin' price drops 2 look out 4 looks like this:
 
 ```
-DOT:-25%,KSM:-20%,MOVR:-20%
+DOT-25%,KSM,MOVR
 ```
 
-when no drop percentage is specified, it defaults to -15%
+when no drop percentage is specified, it defaults to -20%
 
 such a string must be set as cfn param `Drops` as shown in below command
 
@@ -25,7 +25,7 @@ aws cloudformation deploy \
   --stack-name=cignal \
   --template-file=./stack.yml \
   --parameter-overrides \
-    Drops="DOT:-25%,KSM:-20%,MOVR:-20%" \
+    Drops="DOT-25%,KSM-20%,MOVR-20%" \
     RecipientEmailAddresses="x@y.z,a@b.c" \
     LambdaBundleBucketName=my-lambda-bundle-bucket \
     LambdaBundleFilename=lambda.zip \
@@ -37,4 +37,4 @@ aws cloudformation deploy \
   --no-fail-on-empty-changeset
 ```
 
-happy shoppin' 🛒💱💰
+happy shoppin' 🛒📦💰

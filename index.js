@@ -3,10 +3,14 @@ const {
   https: { get: _get }
 } = require("follow-redirects")
 
+if (!process.env.MEM_BUCKET_NAME) throw Error("env var MEM_BUCKET_NAME unset")
+if (!process.env.TOPIC_ARN) throw Error("env var TOPIC_ARN unset")
+
 const drops = process.env.DROPS.split(",")
   .filter(Boolean)
   .map(drop => {
-    const [symbol, perc = "-15%"] = drop.split(":")
+    const [symbol, perc = "-20%"] = drop.split(/\b(?=-)/)
+    if (!perc.startsWith("-")) throw Error("non-negative price change defined")
     return {
       symbol: symbol.toLowerCase(),
       minDropPerc: Number(perc.replace("%", ""))
@@ -19,7 +23,8 @@ const symbolToCoinGeckoId = Object.freeze({
   movr: "moonriver",
   glmr: "glimmer",
   ksm: "kusama",
-  dot: "dot"
+  dot: "dot",
+  stake: "xdai-stake"
 })
 
 const s3 = new S3({ params: { Bucket: process.env.MEM_BUCKET_NAME } })
@@ -37,7 +42,7 @@ module.exports.handler = async () => {
           }% within 24hrs`
           const { MessageId: msgId } = await sns
             .publish({
-              Message: msgText,
+              Message: msgTxt,
               TopicArn: process.env.TOPIC_ARN
             })
             .promise()

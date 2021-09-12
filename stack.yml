@@ -10,10 +10,9 @@ Parameters:
     Type: String
 
   Drops:
-    Description: |
-      Coin list with optional drop percentage, fx "DOT,KSM:-20%,MOVR:-20%"
+    Description: Coin list with optional drop percentage, fx "DOT,KSM-20%,MOVR-20%"
     Type: CommaDelimitedList
-    Default: DOT,KSM,MOVR
+    Default: DOT,KSM,MOVR,STAKE
 
   LambdaBundleFilename:
     Description: Lambda bundle file name
@@ -33,7 +32,7 @@ Parameters:
   LambdaSchedule:
     Description: Lambda execution schedule
     Type: String
-    Default: "0/5 * * * *"
+    Default: "0/2 * * * *"
 
   LambdaLogRetentionDays:
     Description: Lambda log retention period in days
