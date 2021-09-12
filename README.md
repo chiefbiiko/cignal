@@ -4,7 +4,7 @@ get 📧 4 when it's ⌚ 2 🛒 ur fav crypto <sub>unofficially powered by [`coi
 
 ## usage
 
-deploy the stack parameterized to your needs
+deploy the stack parameterized to ur needs
 
 ## drops
 
@@ -36,3 +36,7 @@ aws cloudformation deploy \
 ```
 
 happy shoppin' 🛒📦📦
+
+## license
+
+[MIT](./LICENSE)
