@@ -32,8 +32,19 @@ module.exports.handler = async () => {
   await Promise.all(
     drops.map(async ({ symbol, minDropPerc }) => {
       const coin = await getCoin(symbol)
+      console.log(
+        `${symbol} price_change_percentage_24h, minDropPerc`,
+        coin.price_change_percentage_24h,
+        minDropPerc
+      )
+      console.log(
+        "typeof coin.price_change_percentage_24h, typeof minDropPerc",
+        typeof coin.price_change_percentage_24h,
+        typeof minDropPerc
+      )
       if (coin.price_change_percentage_24h <= minDropPerc) {
         const alreadyNotified = await memoize(symbol)
+        console.log("alreadyNotified", alreadyNotified)
         if (!alreadyNotified) {
           const msgTxt = `${symbol.toUpperCase()} dropd ${
             coin.price_change_percentage_24h
