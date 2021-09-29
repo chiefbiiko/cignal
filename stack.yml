@@ -142,6 +142,9 @@ Resources:
 
   LambdaPermission:
     Type: AWS::Lambda::Permission
+    DependsOn:
+      - Lambda
+      - LambdaSchedule
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt Lambda.Arn
