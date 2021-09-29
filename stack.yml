@@ -13,6 +13,10 @@ Parameters:
     Description: Coin list with optional drop percentage, fx "DOT,KSM-20%,MOVR-20%"
     Type: CommaDelimitedList
 
+  LambdaName:
+    Description: Name for the lambda function
+    Type: String
+
   LambdaBundleFilename:
     Description: Lambda bundle file name
     Type: String
@@ -114,7 +118,7 @@ Resources:
             - !Ref Drops
           TOPIC_ARN: !Ref Topic
           MEM_BUCKET_NAME: !Ref MemBucket
-      FunctionName: !Sub ${AWS::StackName}-lambda
+      FunctionName: !Ref LambdaName
       Handler: index.handler
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: nodejs14.x
