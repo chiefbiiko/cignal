@@ -8,7 +8,7 @@ if (!process.env.TOPIC_ARN) throw Error("env var TOPIC_ARN unset")
 
 console.log("process.env.DROPS", process.env.DROPS)
 
-const drops = JSON.parse(process.env.DROPS).map(drop => {
+const drops = process.env.DROPS.split(",").map(drop => {
   const [symbol, perc = "-20%"] = drop.split(/\b(?=-)/)
   if (!perc.startsWith("-")) throw Error("non-negative price change defined")
   return {

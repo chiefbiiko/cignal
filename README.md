@@ -27,10 +27,10 @@ aws cloudformation deploy \
     Recipients="x@y.z,a@b.c" \
     LambdaBundleBucketName=my-lambda-bundle-bucket \
     LambdaBundleFilename=lambda.zip \
-    LambdaMemorySize=128 \
-    LambdaTimeout=3 \
-    LambdaSchedule="0/5 * * * *" \
-    LambdaLogRetentionDays=7 \
+    LambdaMemorySizeMb=128 \
+    LambdaTimeoutSeconds=5 \
+    LambdaSchedule="rate(5 minutes)" \
+    LambdaLogRetentionDays=1 \
   --capabilities=CAPABILITY_IAM \
   --no-fail-on-empty-changeset
 ```

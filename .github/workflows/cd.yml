@@ -11,8 +11,8 @@ env:
   LAMBDA_NAME: cignal-lambda
   LAMBDA_BUNDLE_BUCKET_NAME: cignal-lambda-bundle-bucket
   LAMBDA_BUNDLE_FILE_NAME: lambda.zip
-  LAMBDA_MEMORY_SIZE: 128
-  LAMBDA_TIMEOUT: 3
+  LAMBDA_MEMORY_SIZE_MB: 128
+  LAMBDA_TIMEOUT_SECONDS: 5
   LAMBDA_SCHEDULE_EXPRESSION: rate(2 minutes)
   LAMBDA_LOG_RETENTION_DAYS: 1
   DROPS: DOT,KSM,MOVR,STAKE
@@ -50,8 +50,8 @@ jobs:
               LambdaName=${{ env.LAMBDA_NAME }} \
               LambdaBundleBucketName=${{ env.LAMBDA_BUNDLE_BUCKET_NAME }} \
               LambdaBundleFilename=${{ env.LAMBDA_BUNDLE_FILE_NAME }} \
-              LambdaMemorySize=${{ env.LAMBDA_MEMORY_SIZE }} \
-              LambdaTimeout=${{ env.LAMBDA_TIMEOUT }} \
+              LambdaMemorySizeMb=${{ env.LAMBDA_MEMORY_SIZE_MB }} \
+              LambdaTimeoutSeconds=${{ env.LAMBDA_TIMEOUT_SECONDS }} \
               LambdaScheduleExpression='${{ env.LAMBDA_SCHEDULE_EXPRESSION }}' \
               LambdaLogRetentionDays=${{ env.LAMBDA_LOG_RETENTION_DAYS }} \
             --capabilities=CAPABILITY_IAM \
