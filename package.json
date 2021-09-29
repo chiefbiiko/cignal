@@ -2,7 +2,7 @@
   "scripts": {
     "fmt": "npx prettier --no-semi --arrow-parens avoid --trailing-comma none --print-width 80 --write './index.js'"
   },
-  "devDependencies": {
+  "dependencies": {
     "follow-redirects": "1.14.4"
   }
 }
