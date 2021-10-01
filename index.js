@@ -9,7 +9,7 @@ const symbolToCoinGeckoId = Object.freeze({
   movr: "moonriver",
   glmr: "glimmer",
   ksm: "kusama",
-  dot: "dot",
+  dot: "polkadot",
   stake: "xdai-stake"
 })
 
