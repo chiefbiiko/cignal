@@ -35,32 +35,26 @@ if (!DROPS_PATTERN.test(process.env.DROPS))
 
 const drops = parseDrops()
 
-debug("drops", drops)
-
 const s3 = new S3({ params: { Bucket: process.env.MEM_BUCKET_NAME } })
 const sns = new SNS()
 
 module.exports.handler = async () => {
+  debug("drops", drops)
   await Promise.all(
     drops.map(async ({ symbol, minDropPerc }) => {
-      const coin = await getCoin(symbol)
+      const {
+        market_data: { price_change_percentage_24h }
+      } = await getCoin(symbol)
       debug(
         `${symbol} price_change_percentage_24h, minDropPerc`,
-        coin.price_change_percentage_24h,
+        price_change_percentage_24h,
         minDropPerc
       )
-      debug(
-        "typeof coin.price_change_percentage_24h, typeof minDropPerc",
-        typeof coin.price_change_percentage_24h,
-        typeof minDropPerc
-      )
-      if (coin.price_change_percentage_24h <= minDropPerc) {
+      if (price_change_percentage_24h <= minDropPerc) {
         const alreadyNotified = await memoize(symbol)
-        debug("alreadyNotified", alreadyNotified)
+        debug(`${symbol} alreadyNotified`, alreadyNotified)
         if (!alreadyNotified) {
-          const msgTxt = `${symbol.toUpperCase()} dropd ${
-            coin.price_change_percentage_24h
-          }% within 24hrs`
+          const msgTxt = `${symbol.toUpperCase()} dropd ${price_change_percentage_24h}% within 24hrs`
           const { MessageId: msgId } = await sns
             .publish({
               Message: msgTxt,
