@@ -34,10 +34,8 @@ jobs:
 
       - run: |
           aws s3 mb s3://${{ env.LAMBDA_BUNDLE_BUCKET_NAME }}
-          npm ci --only=prod
           tmp_dir=$(mktemp -d)
-          npx @vercel/ncc@0.31.0 build --out=$tmp_dir ./index.js
-          zip -j $tmp_dir/bundle.zip $tmp_dir/index.js
+          zip -j $tmp_dir/bundle.zip ./index.js
           aws s3 cp $tmp_dir/bundle.zip s3://${{ env.LAMBDA_BUNDLE_BUCKET_NAME }}/${{ env.LAMBDA_BUNDLE_FILE_NAME }}
 
       - run: |
