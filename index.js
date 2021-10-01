@@ -1,20 +1,6 @@
 const { S3, SNS } = require("aws-sdk")
 const { get } = require("https")
 
-function debug(...args) {
-  console.log("[DEBUG]", ...args)
-}
-
-function parseDrops() {
-  return process.env.DROPS.split(",").map(drop => {
-    const [symbol, perc = "-20%"] = drop.split(/\b(?=-)/)
-    return {
-      symbol: symbol.toLowerCase(),
-      minDropPerc: Number(perc.replace("%", ""))
-    }
-  })
-}
-
 const DROPS_PATTERN = /^[A-Z-_]+(:?-\d+\%)?(:?,[A-Z-_]+(:?-\d+\%)?)*$/
 
 const symbolToCoinGeckoId = Object.freeze({
@@ -66,6 +52,20 @@ module.exports.handler = async () => {
       }
     })
   )
+}
+
+function debug(...args) {
+  console.log("[DEBUG]", ...args)
+}
+
+function parseDrops() {
+  return process.env.DROPS.split(",").map(drop => {
+    const [symbol, perc = "-20%"] = drop.split(/\b(?=-)/)
+    return {
+      symbol: symbol.toLowerCase(),
+      minDropPerc: Number(perc.replace("%", ""))
+    }
+  })
 }
 
 // Memoizes if not happened for given today-date
