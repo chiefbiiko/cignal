@@ -1,7 +1,7 @@
 const { S3, SNS } = require("aws-sdk")
 const { get } = require("https")
 
-const DROPS_PATTERN = /^[A-Z-_]+(:?-\d+\%)?(:?,[A-Z-_]+(:?-\d+\%)?)*$/
+const DROPS = /^[A-Z-_]+(:?-\d+\%)?(:?,[A-Z-_]+(:?-\d+\%)?)*$/
 
 const symbolToCoinGeckoId = Object.freeze({
   eth: "ethereum",
@@ -16,38 +16,30 @@ const symbolToCoinGeckoId = Object.freeze({
 if (!process.env.MEM_BUCKET_NAME) throw Error("env var MEM_BUCKET_NAME unset")
 if (!process.env.TOPIC_ARN) throw Error("env var TOPIC_ARN unset")
 if (!process.env.DROPS) throw Error("env var DROPS unset")
-if (!DROPS_PATTERN.test(process.env.DROPS))
-  throw Error("env var DROPS malformatted, must be CSV, fx 'DOT,MOVR-30%'")
+if (!DROPS.test(process.env.DROPS)) throw Error("env var DROPS malformatted")
 
 const drops = parseDrops()
 
 const s3 = new S3({ params: { Bucket: process.env.MEM_BUCKET_NAME } })
-const sns = new SNS()
+const sns = new SNS({ params: { TopicArn: process.env.TOPIC_ARN } })
 
 module.exports.handler = async () => {
-  debug("drops", drops)
   await Promise.all(
     drops.map(async ({ symbol, minDropPerc }) => {
-      const {
-        market_data: { price_change_percentage_24h }
-      } = await getCoin(symbol)
-      debug(
-        `${symbol} price_change_percentage_24h, minDropPerc`,
-        price_change_percentage_24h,
-        minDropPerc
-      )
-      if (price_change_percentage_24h <= minDropPerc) {
-        const alreadyNotified = await memoize(symbol)
-        debug(`${symbol} alreadyNotified`, alreadyNotified)
-        if (!alreadyNotified) {
-          const msgTxt = `${symbol.toUpperCase()} dropd ${price_change_percentage_24h}% within 24hrs`
-          const { MessageId: msgId } = await sns
-            .publish({
-              Message: msgTxt,
-              TopicArn: process.env.TOPIC_ARN
-            })
-            .promise()
-          debug(`just sent msg ${msgId}: "${msgTxt}"`)
+      const coin = await getCoin(symbol)
+      if (coin.market_data && coin.market_data.price_change_percentage_24h) {
+        const change24hrs = coin.market_data.price_change_percentage_24h
+        debug(`${symbol} change24hrs, minDropPerc`, change24hrs, minDropPerc)
+        if (change24hrs <= minDropPerc) {
+          const alreadyNotified = await memoize(symbol)
+          debug(`${symbol} alreadyNotified`, alreadyNotified)
+          if (!alreadyNotified) {
+            const msgTxt = `${symbol.toUpperCase()} dropd ${change24hrs}% within 24hrs`
+            const { MessageId: msgId } = await sns
+              .publish({ Message: msgTxt })
+              .promise()
+            debug(`just sent msg ${msgId}: "${msgTxt}"`)
+          }
         }
       }
     })
