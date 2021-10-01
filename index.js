@@ -23,6 +23,7 @@ const drops = parseDrops()
 const s3 = new S3({ params: { Bucket: process.env.MEM_BUCKET_NAME } })
 const sns = new SNS({ params: { TopicArn: process.env.TOPIC_ARN } })
 
+/// Lambda handler
 module.exports.handler = async () => {
   await Promise.all(
     drops.map(async ({ symbol, minDropPerc }) => {
@@ -46,10 +47,12 @@ module.exports.handler = async () => {
   )
 }
 
+/// Always prints debugly
 function debug(...args) {
   console.log("[DEBUG]", ...args)
 }
 
+/// Parses the DROPS env var
 function parseDrops() {
   return process.env.DROPS.split(",").map(drop => {
     const [symbol, perc = "-20%"] = drop.split(/\b(?=-)/)
@@ -60,8 +63,10 @@ function parseDrops() {
   })
 }
 
-// Memoizes if not happened for given today-date
-// Returns true if an email has been sent about symbol's today drop else false
+/**
+ * Memoizes if not happened for given today-date
+ * Returns true if an email has been sent about symbol's today drop else false
+ */
 async function memoize(symbol) {
   const date = new Date().toISOString()
   const objectKey = `${date.slice(0, 10)}/${symbol}`
@@ -78,6 +83,7 @@ async function memoize(symbol) {
   }
 }
 
+/// Fetches coin info from the coingecko API
 async function getCoin(symbol) {
   return new Promise((resolve, reject) => {
     get(
